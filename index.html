@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0"
+          name="viewport">
     <title>Яндекс.Дом</title>
-    <link as="font" href="assets/lato.woff2" type="font/woff2" crossorigin="anonymous">
-    <script src="vendors/react-with-dom.js"></script>
-    <link rel="stylesheet" type="text/css" href="reset.css">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link as="font" crossorigin="anonymous" href="assets/lato.woff2" type="font/woff2">
+    <script async src="vendors/react-with-dom.js"></script>
+    <link href="reset.css" rel="stylesheet" type="text/css">
+    <link href="styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
@@ -37,63 +37,6 @@
 
 <script src="vendors/babel.min.js"></script>
 <script type="text/babel">
-    function Header() {
-        let [expanded, setExpanded] = React.useState(false);
-        let [toggled, setToggled] = React.useState(false);
-
-        const onClick = () => {
-            if (!toggled) {
-                setToggled(true);
-            }
-
-            setExpanded(!expanded);
-        };
-
-        return <header className="header">
-            <a href="/" className="header__logo" aria-label="Яндекс.Дом"></a>
-            <button className="header__menu" aria-expanded={expanded ? 'true' : 'false'} onClick={onClick}>
-                <span className="header__menu-text a11y-hidden">
-                    {expanded ? 'Закрыть меню' : 'Открыть меню'}
-                </span>
-            </button>
-            <ul className={'header__links' + (expanded ? ' header__links_opened' : '') + (toggled ? ' header__links-toggled' : '')}>
-                <li className="header__item">
-                    <a className="header__link header__link_current" href="/" aria-current="page">Сводка</a>
-                </li>
-                <li className="header__item">
-                    <a className="header__link" href="/devices">Устройства</a>
-                </li>
-                <li className="header__item">
-                    <a className="header__link" href="/scripts">Сценарии</a>
-                </li>
-            </ul>
-        </header>;
-    }
-
-    function Event(props) {
-        const ref = React.useRef();
-
-        const { onSize } = props;
-
-        React.useEffect(() => {
-            const width = ref.current.offsetWidth;
-            const height = ref.current.offsetHeight;
-            if (onSize) {
-                onSize({ width, height });
-            }
-        });
-
-        return <li ref={ref} className={'event' + (props.slim ? ' event_slim' : '')}>
-            <button className="event__button">
-                <span className={`event__icon event__icon_${props.icon}`} role="img" aria-label={props.iconLabel}></span>
-                <h4 className="event__title">{props.title}</h4>
-                {props.subtitle &&
-                    <span className="event__subtitle">{props.subtitle}</span>
-                }
-            </button>
-        </li>;
-    }
-
     const TABS = {
         all: {
             title: 'Все',
@@ -201,10 +144,85 @@
             }]
         }
     };
-    for (let i = 0; i < 6; ++i) {
-        TABS.all.items = [...TABS.all.items, ...TABS.all.items];
-    }
     const TABS_KEYS = Object.keys(TABS);
+
+    function Logo() {
+        return <a href="/" className="header__logo" aria-label="Яндекс.Дом"></a>;
+    }
+
+    function MenuButton({expanded, onClick}) {
+        return (
+            <button className="header__menu" aria-expanded={expanded ? 'true' : 'false'} onClick={onClick}>
+            <span className="header__menu-text a11y-hidden">
+                {expanded ? 'Закрыть меню' : 'Открыть меню'}
+            </span>
+            </button>
+        );
+    }
+
+    function Links({expanded, toggled}) {
+        return (
+            <ul className={'header__links' + (expanded ? ' header__links_opened' : '') + (toggled ? ' header__links-toggled' : '')}>
+                <li className="header__item">
+                    <a className="header__link header__link_current" href="/" aria-current="page">Сводка</a>
+                </li>
+                <li className="header__item">
+                    <a className="header__link" href="/devices">Устройства</a>
+                </li>
+                <li className="header__item">
+                    <a className="header__link" href="/scripts">Сценарии</a>
+                </li>
+            </ul>
+        );
+    }
+
+    function Header() {
+        let [expanded, setExpanded] = React.useState(false);
+        let [toggled, setToggled] = React.useState(false);
+
+        const onClick = () => {
+            if (!toggled) {
+                setToggled(true);
+            }
+            setExpanded(!expanded);
+        };
+
+        return (
+            <header className="header">
+                <Logo/>
+                <MenuButton expanded={expanded} onClick={onClick}/>
+                <Links expanded={expanded} toggled={toggled}/>
+            </header>
+        );
+    }
+
+
+    function Event(props) {
+        const ref = React.useRef();
+
+        const {onSize} = props;
+
+        React.useEffect(() => {
+            const width = ref.current.offsetWidth;
+            const height = ref.current.offsetHeight;
+            if (onSize) {
+                onSize({width, height});
+            }
+        });
+
+        return <li ref={ref} className={'event' + (props.slim ? ' event_slim' : '')}>
+            <button className="event__button">
+                <span className={`event__icon event__icon_${props.icon}`} role="img"
+                      aria-label={props.iconLabel}></span>
+                <h4 className="event__title">{props.title}</h4>
+                {props.subtitle &&
+                    <span className="event__subtitle">{props.subtitle}</span>
+                }
+            </button>
+        </li>;
+    }
+
+
 
     function Main() {
         const ref = React.useRef();
@@ -230,7 +248,6 @@
 
         React.useEffect(() => {
             const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
-            const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
 
             const newHasRightScroll = sumWidth > ref.current.offsetWidth;
             if (newHasRightScroll !== hasRightScroll) {
@@ -373,7 +390,10 @@
 
                 <div className="section__panel-wrapper" ref={ref}>
                     {TABS_KEYS.map(key =>
-                        <div key={key} role="tabpanel" className={'section__panel' + (key === activeTab ? '' : ' section__panel_hidden')} aria-hidden={key === activeTab ? 'false' : 'true'} id={`panel_${key}`} aria-labelledby={`tab_${key}`}>
+                        <div key={key} role="tabpanel"
+                             className={'section__panel' + (key === activeTab ? '' : ' section__panel_hidden')}
+                             aria-hidden={key === activeTab ? 'false' : 'true'} id={`panel_${key}`}
+                             aria-labelledby={`tab_${key}`}>
                             <ul className="section__panel-list">
                                 {TABS[key].items.map((item, index) =>
                                     <Event
@@ -393,15 +413,13 @@
         </main>;
     }
 
-    setTimeout(() => {
-        const root = ReactDOM.createRoot(document.getElementById('app'));
-        root.render(
-            <>
-                <Header />
-                <Main />
-            </>
-        );
-    }, 100);
+    const root = ReactDOM.createRoot(document.getElementById('app'));
+    root.render(
+        <>
+            <Header/>
+            <Main/>
+        </>
+    );
 </script>
 
 </body>
